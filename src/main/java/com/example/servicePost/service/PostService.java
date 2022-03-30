@@ -6,8 +6,12 @@ import com.example.servicePost.createPostRequest;
 import com.example.servicePost.createPostResponse;
 import com.example.servicePost.domain.Post;
 import com.example.servicePost.reponsitory.PostReponsitory;
+import com.example.servicePost.updatePostRequest;
+import com.example.servicePost.updatePostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -38,6 +42,22 @@ public class PostService {
         return createPostResponse.newBuilder()
                 .setMessage("Please transmit data")
                 .build();
+    }
+
+    public updatePostResponse updatePost (updatePostRequest request) {
+        Post post = postReponsitory.findById(request.getIdPost())
+                .orElseThrow(()-> new NullPointerException("Post Not Found with postId: " + request.getIdPost()));
+        post.setContent(request.getContent());
+        post.setTitle(request.getTitle());
+        postReponsitory.save(post);
+
+        return updatePostResponse.newBuilder()
+                .setContent(post.getContent())
+                .setTitle(post.getTitle())
+                .setIdPost(post.getId())
+                .setMessage("update post success")
+                .build();
+
     }
 
 }
